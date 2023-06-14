@@ -1,0 +1,40 @@
+# Creating a view to use later
+[84, 17:47:22] create view PFR1 as
+select P.Year, P.country_name as country, P.size as population, F.weight_t, ifnull(P.size/F.weight_t,0) as PFR
+from population P, food F
+where P.country_name = F.country_name and P.Year = F.year and F.weight_t != 0
+and (ifnull(P.size/F.weight_t,0))>=0: Running...
+[84, 17:47:22] create view PFR1 as
+select P.Year, P.country_name as country, P.size as population, F.weight_t, ifnull(P.size/F.weight_t,0) as PFR
+from population P, food F
+where P.country_name = F.country_name and P.Year = F.year and F.weight_t != 0
+and (ifnull(P.size/F.weight_t,0))>=0: 0 row(s) affected
+
+-----------------------------------------------------------------------------------------
+# First running the query with JOIN, returns 2904 rows
+
+[86, 17:47:22] SELECT PFR1.Year, PFR1.Country, PFR1.Population, PFR1.weight_t, PFR1.PFR
+FROM PFR1
+LEFT JOIN PFR ON PFR1.Year = PFR.Year AND PFR1.Country = PFR.Country
+WHERE PFR.Year IS NULL AND PFR.Country IS NULL: Running...
+[86, 17:47:22] SELECT PFR1.Year, PFR1.Country, PFR1.Population, PFR1.weight_t, PFR1.PFR
+FROM PFR1
+LEFT JOIN PFR ON PFR1.Year = PFR.Year AND PFR1.Country = PFR.Country
+WHERE PFR.Year IS NULL AND PFR.Country IS NULL: Fetching...
+[86, 17:47:22] SELECT PFR1.Year, PFR1.Country, PFR1.Population, PFR1.weight_t, PFR1.PFR
+FROM PFR1
+LEFT JOIN PFR ON PFR1.Year = PFR.Year AND PFR1.Country = PFR.Country
+WHERE PFR.Year IS NULL AND PFR.Country IS NULL: 2904 row(s) returned
+
+-----------------------------------------------------------------------------------------
+# Then running the query with NOT IN, it also returns 2904 rows
+
+[85, 17:47:22] SELECT Year, Country, Population, weight_t, PFR
+FROM PFR1
+WHERE (Year, Country) NOT IN (SELECT Year, Country FROM PFR): Running...
+[85, 17:47:22] SELECT Year, Country, Population, weight_t, PFR
+FROM PFR1
+WHERE (Year, Country) NOT IN (SELECT Year, Country FROM PFR): Fetching...
+[85, 17:47:22] SELECT Year, Country, Population, weight_t, PFR
+FROM PFR1
+WHERE (Year, Country) NOT IN (SELECT Year, Country FROM PFR): 2904 row(s) returned

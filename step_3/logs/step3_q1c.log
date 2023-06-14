@@ -1,0 +1,33 @@
+# First running with EXISTS, returns 1483 rows
+
+[87, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE EXISTS (SELECT * FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.country_name = c.country_name
+            	AND scw.year = c.year): Running...
+[87, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE EXISTS (SELECT * FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.country_name = c.country_name
+            	AND scw.year = c.year): Fetching...
+[87, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE EXISTS (SELECT * FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.country_name = c.country_name
+            	AND scw.year = c.year): 1483 row(s) returned
+
+------------------------------------------------------------------------------------------------
+# Then running the query with in IN, also returns 1483 rows
+
+[88, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE scw.country_name IN (SELECT c.country_name FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.year = c.year): Running...
+[88, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE scw.country_name IN (SELECT c.country_name FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.year = c.year): Fetching...
+[88, 17:54:52] SELECT scw.country_name, scw.year, scw.weight_t AS SupplyChainWaste_t
+FROM supply_chain_waste scw
+WHERE scw.country_name IN (SELECT c.country_name FROM crops c
+   			 WHERE c.export_t > c.import_t AND scw.year = c.year): 1483 row(s) returned

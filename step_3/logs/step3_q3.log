@@ -1,0 +1,24 @@
+[120, 18:08:28] CREATE PROCEDURE `get_production`(cname varchar(50))
+BEGIN
+	SELECT *
+    FROM crops AS C
+    WHERE C.country_name = cname;
+END: Running...
+[120, 18:08:28] CREATE PROCEDURE `get_production`(cname varchar(50))
+BEGIN
+	SELECT *
+    FROM crops AS C
+    WHERE C.country_name = cname;
+END: 0 row(s) affected
+
+-----------------------------------------------------------------------------------------
+
+[121, 18:08:58] CALL get_production("Turkey"): Running...
+[121, 18:08:58] CALL get_production("Turkey"): Fetching...
+[121, 18:08:58] CALL get_production("Turkey"): 59 row(s) returned
+
+-----------------------------------------------------------------------------------------
+
+[123, 18:09:09] CALL get_production("Russia"): Running...
+[123, 18:09:09] CALL get_production("Russia"): Fetching...
+[123, 18:09:09] CALL get_production("Russia"): 28 row(s) returned

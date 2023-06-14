@@ -1,0 +1,96 @@
+# Adding the constraint to the table
+
+[19, 11:57:09] ALTER TABLE supply_chain_waste
+ADD CONSTRAINT chk_weight_t_range_of_supply_chain_waste
+CHECK (weight_t >= 0 AND weight_t <= 19111000): Running...
+[19, 11:57:09] ALTER TABLE supply_chain_waste
+ADD CONSTRAINT chk_weight_t_range_of_supply_chain_waste
+CHECK (weight_t >= 0 AND weight_t <= 19111000): 10409 row(s) affected
+Records: 10409  Duplicates: 0  Warnings: 0
+
+-----------------------------------------------------------------------------------------
+# Trying to insert a row that has values outside the limits gives an error
+
+[20, 11:57:19] insert into supply_chain_waste(country_name, year, weight_t) values ('Afghanistan', 1944, -12): Running...
+[20, 11:57:19] insert into supply_chain_waste(country_name, year, weight_t) values ('Afghanistan', 1944, -12): Error Code: 3819. Check constraint 'chk_weight_t_range_of_supply_chain_waste' is violated.
+
+-----------------------------------------------------------------------------------------
+# Creating before-insert and before-update triggers
+
+[21, 11:57:26] DROP TRIGGER IF EXISTS trigger_before_insert_scw: Running...
+[21, 11:57:26] DROP TRIGGER IF EXISTS trigger_before_insert_scw: 0 row(s) affected, 1 warning(s):
+1360 Trigger does not exist
+[22, 11:57:26] DROP TRIGGER IF EXISTS trigger_before_update_scw: Running...
+[22, 11:57:26] DROP TRIGGER IF EXISTS trigger_before_update_scw: 0 row(s) affected, 1 warning(s):
+1360 Trigger does not exist
+
+
+[23, 11:57:26] set @max_weight = (SELECT MAX(weight_t) FROM supply_chain_waste): Running...
+[23, 11:57:26] set @max_weight = (SELECT MAX(weight_t) FROM supply_chain_waste): 0 row(s) affected
+[24, 11:57:26] set @min_weight = (SELECT MIN(weight_t) FROM supply_chain_waste): Running...
+[24, 11:57:26] set @min_weight = (SELECT MIN(weight_t) FROM supply_chain_waste): 0 row(s) affected
+
+
+[25, 11:57:26] CREATE TRIGGER trigger_before_insert_scw
+BEFORE INSERT ON supply_chain_waste
+FOR EACH ROW
+BEGIN
+	IF NEW.weight_t < @min_weight THEN
+		SET NEW.weight_t = @min_weight;
+	END IF;
+	IF NEW.weight_t > @max_weight THEN
+		SET NEW.weight_t = @max_weight;
+	END IF;
+END: Running...
+[25, 11:57:26] CREATE TRIGGER trigger_before_insert_scw
+BEFORE INSERT ON supply_chain_waste
+FOR EACH ROW
+BEGIN
+	IF NEW.weight_t < @min_weight THEN
+		SET NEW.weight_t = @min_weight;
+	END IF;
+	IF NEW.weight_t > @max_weight THEN
+		SET NEW.weight_t = @max_weight;
+	END IF;
+END: 0 row(s) affected
+
+
+[26, 11:57:26] CREATE TRIGGER trigger_before_update_scw
+BEFORE UPDATE ON supply_chain_waste
+FOR EACH ROW
+BEGIN
+	IF NEW.weight_t < @min_weight THEN
+		SET NEW.weight_t = @min_weight;
+	END IF;
+	IF NEW.weight_t > @max_weight THEN
+		SET NEW.weight_t = @max_weight;
+	END IF;
+END: Running...
+[26, 11:57:26] CREATE TRIGGER trigger_before_update_scw
+BEFORE UPDATE ON supply_chain_waste
+FOR EACH ROW
+BEGIN
+	IF NEW.weight_t < @min_weight THEN
+		SET NEW.weight_t = @min_weight;
+	END IF;
+	IF NEW.weight_t > @max_weight THEN
+		SET NEW.weight_t = @max_weight;
+	END IF;
+END: 0 row(s) affected
+
+-----------------------------------------------------------------------------------------
+# Trying to insert the same row now is successful
+
+[27, 11:57:31] insert into supply_chain_waste(country_name, year, weight_t) values ('Afghanistan', 1944, -12): Running...
+[27, 11:57:31] insert into supply_chain_waste(country_name, year, weight_t) values ('Afghanistan', 1944, -12): 1 row(s) affected
+
+
+[28, 11:57:38] select *
+from supply_chain_waste as s
+where s.country_name = "Afghanistan" and s.year = 1944: Running...
+[28, 11:57:38] select *
+from supply_chain_waste as s
+where s.country_name = "Afghanistan" and s.year = 1944: Fetching...
+[28, 11:57:38] select *
+from supply_chain_waste as s
+where s.country_name = "Afghanistan" and s.year = 1944: 1 row(s) returned
